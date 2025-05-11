@@ -1,151 +1,151 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xem Camera Trực Tuyến</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .camera-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1rem;
-            padding: 1rem;
-        }
-        .camera-frame {
-            background-color: #f0f0f0;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-        }
-        .camera-title {
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        video {
-            width: 700px;
-            border-radius: 0.25rem;
-            background-color: #000;
-        }
-        .no-video {
-            background-color: #ddd;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 0.25rem;
-            color: #666;
-            font-size: 0.8rem;
-            text-align: center;
-        }
-        .embed-responsive {
-            position: relative;
-            padding-bottom: 56.25%; /* Tỷ lệ 16:9 */
-            height: 0;
-            overflow: hidden;
-        }
-        .embed-responsive iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xem Camera Trực Tuyến</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .camera-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .camera-frame {
+      background-color: #f0f0f0;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+    .camera-title {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    video {
+      width: 100%;
+      border-radius: 0.25rem;
+      background-color: #000;
+    }
+    .no-video {
+      background-color: #ddd;
+      height: 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 0.25rem;
+      color: #666;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
-    <h1 class="text-2xl font-semibold text-center text-gray-800 my-4">Xem Camera Trực Tuyến</h1>
-    <div class="flex justify-center my-4">
-        <button id="toggle-audio" class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md font-semibold">
-            Bật/Tắt Tất Cả Âm Thanh
-        </button>
-    </div>
-    <div class="camera-container">
-        <div class="camera-frame">
-            <h2 class="camera-title">TP.HCM 1</h2>
-            <video id="video-tphcm-1" controls preload="none" muted></video>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">TP.HCM 2</h2>
-            <video id="video-tphcm-2" controls preload="none" muted></video>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">Đà Nẵng 1</h2>
-            <video id="video-danang-1" controls preload="none" muted></video>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">Đà Nẵng 2</h2>
-            <video id="video-danang-2" controls preload="none" muted></video>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">Đà Nẵng 3</h2>
-             <video id="video-danang-3" controls preload="none" muted></video>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">Đà Nẵng 4</h2>
-             <video id="video-danang-4" controls preload="none" muted></video>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">Đà Nẵng 5</h2>
-             <video id="video-danang-5" controls preload="none" muted></video>
-            </div>
-        </div>
-        <div class="camera-frame">
-            <h2 class="camera-title">Hội An</h2>
-            <video id="video-hoian" controls preload="none" muted></video>
-        </div>
-    </div>
-    <script>
-        const toggleAudioButton = document.getElementById('toggle-audio');
-        const videoElements = document.querySelectorAll('video');
-        let isMuted = true;
-        const videoSources = [
-            { id: 'video-tphcm-1', url: 'https://livevn.piepme.com/camhls/14789.a6a2cdaedb0e4a62b8307d232370f4ff_720p/index.m3u8' },
-            { id: 'video-tphcm-2', url: 'https://livevn.piepme.com/camhls/14789.1c9859765db1a5d224bc7b41fc8af740_720p/index.m3u8' },
-            { id: 'video-danang-1', url: 'https://livevn.piepme.com/camhls/14789.7341945e2076b7ec5463f16f515ec400_720p/index.m3u8' },
-            { id: 'video-danang-2', url: 'https://livevn.piepme.com/camhls/14789.1b5aa79584634429877ce7beeb68ca3a_720p/index.m3u8' },
-            { id: 'video-danang-3', url: 'https://manifest.googlevideo.com/api/manifest/hls_variant/expire/1746947481/ei/OfkfaNvZJaSQvcAPyoejwAE/ip/123.31.65.238/id/VHxNpNjKurU.107/source/yt_live_broadcast/requiressl/yes/xpc/EgVo2aDSNQ%3D%3D/hfr/1/playlist_duration/30/manifest_duration/30/maudio/1/ss/1/ssa/1/bui/AecWEAY6aJP9opR1kiyUL2hBX0q1De5jXff4GiJrkOuWnc3Wft8xXW9lCACj0bClUMgwxFTPKN6Awq8x/spc/wk1kZmT0QEhNOkhAbVCS-0xVZVZ69w4M4RRk94fEJ5JbqrQbt2iCnrYLaIMJ0PC1qxPOzlA/vprv/1/go/1/rqh/5/pacing/0/nvgoi/1/ncsapi/1/keepalive/yes/fexp/51355912/dover/11/itag/0/playlist_type/DVR/sparams/expire%2Cei%2Cip%2Cid%2Csource%2Crequiressl%2Cxpc%2Chfr%2Cplaylist_duration%2Cmanifest_duration%2Cmaudio%2Css%2Cssa%2Cbui%2Cspc%2Cvprv%2Cgo%2Crqh%2Citag%2Cplaylist_type/sig/AJfQdSswRQIhAJxy41lAETDfHDbKWO7iCWHgs-1s7m--lApc4a9LszjjAiAfaioCsfN0shMuVtpu-G6qCJss9ntuZoPeozyDz_cQUg%3D%3D/file/index.m3u8' },
-            { id: 'video-danang-4', url: 'https://manifest.googlevideo.com/api/manifest/hls_variant/expire/1746947482/ei/OvkfaMq5HdGO1d8Phd7WyQg/ip/123.31.65.238/id/CaMkzNXwVcE.1/source/yt_live_broadcast/requiressl/yes/xpc/EgVo2aDSNQ%3D%3D/hfr/1/playlist_duration/30/manifest_duration/30/maudio/1/bui/AecWEAZZGH_TEBfZs0XdW7jPlPq0Xw7sljuzWIsHsyuZP5xnT5q1X8uJmyp21OQQ1LO3mXTBNcVOH1Oh/spc/wk1kZgromhh0pXFq8Hy6pwxqEBfkYrMbHFoMcmn1cYVXi0yk7IcxprGgqtphSCWMMzjcEtY/vprv/1/go/1/rqh/5/pacing/0/nvgoi/1/ncsapi/1/keepalive/yes/fexp/51355912/dover/11/itag/0/playlist_type/DVR/sparams/expire%2Cei%2Cip%2Cid%2Csource%2Crequiressl%2Cxpc%2Chfr%2Cplaylist_duration%2Cmanifest_duration%2Cmaudio%2Cbui%2Cspc%2Cvprv%2Cgo%2Crqh%2Citag%2Cplaylist_type/sig/AJfQdSswRgIhAKcp7GfFVjbf-LC2fxGS-kCILa3po3qhMSEc0nd1LpiSAiEA3RcCH3QVDZ80JoGoADgHFpP8r82voJBdOqd3GsGdQ2g%3D/file/index.m3u8' },
-            { id: 'video-danang-5', url: 'https://manifest.googlevideo.com/api/manifest/hls_variant/expire/1746947483/ei/O_kfaKz2FOP62roP8tyI4AM/ip/123.31.65.238/id/xCNRP131kNY.1/source/yt_live_broadcast/requiressl/yes/xpc/EgVo2aDSNQ%3D%3D/tx/51477232/txs/51477230%2C51477231%2C51477232/hfr/1/playlist_duration/30/manifest_duration/30/maudio/1/bui/AecWEAbAEWcZ1o0JiNZMTfL_gYkEdx2vY4N3nIvrzlSZA-YpfUmxrzgwXlDAFYazOMo8Q6HxcsR29wKr/spc/wk1kZrw5d-rkJKKc-H5t6twPKrL2Ww5B_BFzHBsEB2uUVLL1ASi9bnmYBaG5EoM7A80ZmYw/vprv/1/go/1/rqh/5/pacing/0/nvgoi/1/ncsapi/1/keepalive/yes/fexp/51355912%2C51476174/dover/11/itag/0/playlist_type/DVR/sparams/expire%2Cei%2Cip%2Cid%2Csource%2Crequiressl%2Cxpc%2Ctx%2Ctxs%2Chfr%2Cplaylist_duration%2Cmanifest_duration%2Cmaudio%2Cbui%2Cspc%2Cvprv%2Cgo%2Crqh%2Citag%2Cplaylist_type/sig/AJfQdSswRQIhAP5o6LHZfrdDIMyBqk-KJOc34FiePi4qo6F8e0P3TRdRAiBcQbMRZdFeDDJAgIeI7WoBvcCd63EBrwkQHOXyAjZ1jg%3D%3D/file/index.m3u8' },
-            { id: 'video-hoian', url: 'https://livevn.piepme.com/camhls/14789.402a1e77e3ea1fcd2b2a36be6c2c4caa_720p/index.m3u8' },
-        ];
+  <h1 class="text-2xl font-semibold text-center text-gray-800 my-4">Xem Camera Trực Tuyến</h1>
+  <div class="flex justify-center my-4">
+    <button id="toggle-audio" class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md font-semibold">
+      Bật Tất Cả Âm Thanh
+    </button>
+  </div>
 
-        if (Hls.isSupported()) {
-            videoSources.forEach(source => {
-                const video = document.getElementById(source.id);
-                const hls = new Hls();
-                hls.loadSource(source.url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play();
-                });
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            videoSources.forEach(source => {
-                const video = document.getElementById(source.id);
-                video.src = source.url;
-                video.addEventListener('loadedmetadata', () => {
-                    video.play();
-                });
-            });
-        }
+  <div class="camera-container" id="cameraContainer"></div>
 
+  <script>
+    const videoSources = [
+      { id: 'video-tphcm-1', title: 'TP.HCM 1', url: 'https://livevn.piepme.com/camhls/14789.a6a2cdaedb0e4a62b8307d232370f4ff_720p/index.m3u8' },
+      { id: 'video-tphcm-2', title: 'TP.HCM 2', url: 'https://livevn.piepme.com/camhls/14789.1c9859765db1a5d224bc7b41fc8af740_720p/index.m3u8' },
+      { id: 'video-danang-1', title: 'Đà Nẵng 1', url: 'https://livevn.piepme.com/camhls/14789.7341945e2076b7ec5463f16f515ec400_720p/index.m3u8' },
+      { id: 'video-danang-2', title: 'Đà Nẵng 2', url: 'https://livevn.piepme.com/camhls/1b5aa79584634429877ce7beeb68ca3a_720p/index.m3u8' },
+      { id: 'video-danang-3', title: 'Đà Nẵng 3', url: 'https://manifest.googlevideo.com/api/manifest/hls_variant/...index.m3u8' },
+      { id: 'video-danang-4', title: 'Đà Nẵng 4', url: 'https://manifest.googlevideo.com/api/manifest/hls_variant/...index.m3u8' },
+      { id: 'video-danang-5', title: 'Đà Nẵng 5', url: 'https://manifest.googlevideo.com/api/manifest/hls_variant/...index.m3u8' },
+      { id: 'video-hoian', title: 'Hội An', url: 'https://livevn.piepme.com/camhls/14789.402a1e77e3ea1fcd2b2a36be6c2c4caa_720p/index.m3u8' },
+    ];
 
-        toggleAudioButton.addEventListener('click', () => {
-            videoElements.forEach(video => {
-                video.muted = isMuted;
-            });
-            isMuted = !isMuted;
-            toggleAudioButton.textContent = isMuted ? 'Bật Tất Cả Âm Thanh' : 'Tắt Tất Cả Âm Thanh';
+    const container = document.getElementById('cameraContainer');
+    let isMuted = true;
+
+    // Render video elements dynamically
+    videoSources.forEach(source => {
+      const frame = document.createElement('div');
+      frame.className = 'camera-frame';
+      frame.innerHTML = `
+        <h2 class="camera-title">${source.title}</h2>
+        <video id="${source.id}" controls preload="none" muted class="video-player"></video>
+      `;
+      container.appendChild(frame);
+    });
+
+    const videoElements = document.querySelectorAll('video');
+
+    // Load streams
+    if (Hls.isSupported()) {
+      videoSources.forEach(source => {
+        const video = document.getElementById(source.id);
+        if (!video) return;
+        const hls = new Hls();
+        hls.loadSource(source.url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play();
         });
-    </script>
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          console.log('HLS error:', data);
+          if (data.fatal) {
+            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+              hls.startLoad();
+            } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+              hls.recoverMediaError();
+            } else {
+              hls.destroy();
+              showError(video);
+            }
+          }
+        });
+      });
+    } else {
+      videoSources.forEach(source => {
+        const video = document.getElementById(source.id);
+        if (!video) return;
+        if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          video.src = source.url;
+          video.addEventListener('loadedmetadata', () => {
+            video.play();
+          });
+          video.addEventListener('error', () => {
+            showError(video);
+          });
+        }
+      });
+    }
+
+    // Toggle mute
+    document.getElementById('toggle-audio').addEventListener('click', () => {
+      isMuted = !isMuted;
+      videoElements.forEach(video => {
+        video.muted = isMuted;
+      });
+      document.getElementById('toggle-audio').textContent = isMuted
+        ? 'Bật Tất Cả Âm Thanh'
+        : 'Tắt Tất Cả Âm Thanh';
+    });
+
+    function showError(video) {
+      const wrapper = video.parentElement;
+      video.remove();
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'no-video';
+      errorDiv.innerText = 'Không thể phát video';
+      wrapper.appendChild(errorDiv);
+    }
+  </script>
 </body>
 </html>
