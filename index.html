@@ -280,7 +280,8 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body id="body" class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+
     <h1 class="text-2xl font-semibold text-center text-gray-800 my-4">Xem Camera Trực Tuyến</h1>
 
     <div class="flex justify-center my-4">
@@ -288,6 +289,15 @@
             Bật/Tắt Tất Cả Âm Thanh
         </button>
     </div>
+    <div class="flex justify-center gap-4 my-4">
+    <button id="toggle-audio" class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md font-semibold">
+        Bật/Tắt Tất Cả Âm Thanh
+    </button>
+    <button id="toggle-darkmode" class="px-4 py-2 bg-gray-700 hover:bg-gray-900 text-white rounded-md font-semibold">
+        Dark Mode
+    </button>
+</div>
+
 
     <div class="camera-container" id="hls-container">
         <!-- HLS video cameras sẽ được render ở đây -->
@@ -380,6 +390,24 @@
             toggleAudioButton.textContent = isMuted ? 'Bật Tất Cả Âm Thanh' : 'Tắt Tất Cả Âm Thanh';
         });
     </script>
+    <script>
+    tailwind.config = {
+        darkMode: 'class'
+    }
+
+
+
+        // Toggle dark mode
+const toggleDarkBtn = document.getElementById('toggle-darkmode');
+const body = document.getElementById('body');
+
+toggleDarkBtn.addEventListener('click', () => {
+    body.classList.toggle('dark');
+    toggleDarkBtn.textContent = body.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+});
+
+</script>
+
 </body>
 </html>
 
