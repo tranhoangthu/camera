@@ -119,6 +119,10 @@
             <h2 class="camera-title">Hội An</h2>
             <video id="video-hoian" controls preload="none" muted></video>
         </div>
+        <div class="camera-frame">
+            <h2 class="camera-title">Nghệ An</h2>
+            <video id="video-nghean" controls preload="none" muted></video>
+        </div>
     </div>
     <script>
         const toggleAudioButton = document.getElementById('toggle-audio');
@@ -130,6 +134,7 @@
             { id: 'video-danang-1', url: 'https://livevn.piepme.com/camhls/14789.7341945e2076b7ec5463f16f515ec400_720p/index.m3u8' },
             { id: 'video-danang-2', url: 'https://livevn.piepme.com/camhls/14789.1b5aa79584634429877ce7beeb68ca3a_720p/index.m3u8' },
             { id: 'video-hoian', url: 'https://livevn.piepme.com/camhls/14789.402a1e77e3ea1fcd2b2a36be6c2c4caa_720p/index.m3u8' },
+            { id: 'video-nghean', url: 'https://hd-auth.skylinewebcams.com/live.m3u8?a=77tpsmcl9aqhfcfuaotbq7lg45' },
         ];
 
         if (Hls.isSupported()) {
