@@ -192,7 +192,169 @@
 </html> -->
 
 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Xem Camera Trực Tuyến - Cập Nhật Mới</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: background 0.3s; }
+        .camera-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+        .camera-frame {
+            background-color: #d4d4d4;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+        .dark .camera-frame { background-color: #374151; }
+        .camera-title {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .dark .camera-title { color: #f3f4f6; }
+        .embed-responsive {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.25rem;
+            background-color: #000;
+        }
+        .embed-responsive iframe, .embed-responsive video {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: 0;
+        }
+        /* Hiệu ứng loading cho Youtube */
+        .yt-placeholder {
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .play-button {
+            width: 50px; height: 50px; background: rgba(255,0,0,0.8);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body id="body" class="bg-gray-100 text-gray-900">
 
+    <h1 class="text-2xl font-semibold text-center my-4">Hệ Thống Camera Trực Tuyến</h1>
+
+    <div class="flex justify-center gap-4 my-4">
+        <button id="toggle-audio" class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md font-semibold transition">
+            Bật/Tắt Tất Cả Âm Thanh
+        </button>
+        <button id="toggle-darkmode" class="px-4 py-2 bg-gray-700 hover:bg-gray-900 text-white rounded-md font-semibold transition">
+            Dark Mode
+        </button>
+    </div>
+
+    <div class="camera-container" id="hls-container"></div>
+
+    <div class="camera-container" id="youtube-container"></div>
+
+    <script>
+        const hlsCameras = [
+            { id: 'video-tphcm-1', title: 'TP.HCM 1', url: 'https://livevn.piepme.com/camhls/14789.a6a2cdaedb0e4a62b8307d232370f4ff_720p/index.m3u8' },
+            { id: 'video-tphcm-2', title: 'TP.HCM 2', url: 'https://livevn.piepme.com/camhls/14789.1c9859765db1a5d224bc7b41fc8af740_720p/index.m3u8' },
+            { id: 'video-danang-1', title: 'Đà Nẵng 1', url: 'https://livevn.piepme.com/camhls/14789.7341945e2076b7ec5463f16f515ec400_720p/index.m3u8' },
+            { id: 'video-danang-2', title: 'Đà Nẵng 2', url: 'https://livevn.piepme.com/camhls/14789.1b5aa79584634429877ce7beeb68ca3a_720p/index.m3u8' },
+            { id: 'video-hoian', title: 'Hội An', url: 'https://livevn.piepme.com/camhls/14789.402a1e77e3ea1fcd2b2a36be6c2c4caa_720p/index.m3u8' },
+            { id: 'video-nghean', title: 'Nghệ An', url: 'https://hd-auth.skylinewebcams.com/live.m3u8?a=77tpsmcl9aqhfcfuaotbq7lg45' }
+        ];
+
+        const youtubeCameras = [
+            { id: "AcndFyZebdc", title: "Công trình BV Đà Nẵng" },
+            { id: "CaMkzNXwVcE", title: "Trang phục Phương Trần" },
+            { id: "muijHPW82vI", title: "Cổng sau BV C" },
+            { id: "xCNRP131kNY", title: "Cổng trường Nguyễn Huệ" },
+            { id: "oNbdqkEozX0", title: "KS Hải Triều" },
+            { id: "-IxAqwf2pIY", title: "Cổng trường Lý Tự Trọng" },
+            { id: "WUFEgl1Hyb8", title: "Tây Cầu Rồng" },
+            { id: "E1tVeHIk-L8", title: "Lý Tự Trọng - Hướng KS Sông Hàn" },
+            { id: "sECNGJvGpwA", title: "Tiểu học Lý Tự Trọng (PTZ)" }
+        ];
+
+        // 1. Render HLS Cameras
+        const hlsContainer = document.getElementById('hls-container');
+        hlsCameras.forEach(cam => {
+            const div = document.createElement('div');
+            div.className = 'camera-frame';
+            div.innerHTML = `<h2 class="camera-title">${cam.title}</h2><div class="embed-responsive"><video id="${cam.id}" controls muted></video></div>`;
+            hlsContainer.appendChild(div);
+
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(cam.url);
+                hls.attachMedia(document.getElementById(cam.id));
+            }
+        });
+
+        // 2. Render YouTube (Facade Mode)
+        const ytContainer = document.getElementById('youtube-container');
+        youtubeCameras.forEach((cam, index) => {
+            const div = document.createElement('div');
+            div.className = 'camera-frame';
+            const thumb = `https://img.youtube.com/vi/${cam.id}/hqdefault.jpg`;
+            div.innerHTML = `
+                <h2 class="camera-title">${cam.title}</h2>
+                <div class="embed-responsive yt-placeholder" id="yt-${cam.id}" 
+                     style="background-image: url('${thumb}')"
+                     onclick="loadYT('${cam.id}')">
+                    <div class="play-button">
+                        <svg width="20" height="20" fill="white" viewBox="0 0 20 20"><path d="M5 3l12 7-12 7V3z"/></svg>
+                    </div>
+                </div>`;
+            ytContainer.appendChild(div);
+        });
+
+        function loadYT(id) {
+            const el = document.getElementById(`yt-${id}`);
+            el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        }
+
+        // Tự động load dần YouTube sau 3 giây để tránh lag ban đầu
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                youtubeCameras.forEach((cam, i) => {
+                    setTimeout(() => loadYT(cam.id), i * 1500); // Load mỗi camera cách nhau 1.5s
+                });
+            }, 3000);
+        });
+
+        // Điều khiển Dark Mode & Mute (Giữ nguyên logic của bạn)
+        const toggleAudio = document.getElementById('toggle-audio');
+        let isMuted = true;
+        toggleAudio.addEventListener('click', () => {
+            document.querySelectorAll('video').forEach(v => v.muted = !isMuted);
+            isMuted = !isMuted;
+            toggleAudio.innerText = isMuted ? 'Bật Âm Thanh' : 'Tắt Âm Thanh';
+        });
+
+        document.getElementById('toggle-darkmode').addEventListener('click', () => {
+            document.getElementById('body').classList.toggle('dark');
+        });
+    </script>
+</body>
+</html>
 
 
 
@@ -406,6 +568,7 @@ toggleDarkBtn.addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
